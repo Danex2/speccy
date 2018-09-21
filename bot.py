@@ -10,4 +10,4 @@ i = soup.findAll("td", {'class': ["component-type", "component-name"]})
 result = []
 
 for c in i:
-    print(c.get_text())
+    print(c.get_text().strip('\n'))
