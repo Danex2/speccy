@@ -1,1 +1,2 @@
 BeautifulSoup==4.4.0
+git+https://github.com/Rapptz/discord.py/archive/master.zip#egg=discord.py[voice]
