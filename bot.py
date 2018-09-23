@@ -4,7 +4,10 @@ import discord
 import asyncio
 from datetime import date
 import json
+<<<<<<< HEAD
 import sqlite3
+=======
+>>>>>>> d4a26fcb5c962c7ef9c93caccdef4b74d90c5966
 
 conn = sqlite3.connect('users.db')
 c = conn.cursor()
@@ -14,9 +17,15 @@ client = discord.Client()
 
 @client.event
 async def on_ready():
+<<<<<<< HEAD
     await client.change_presence(game=discord.Game(name='Beep boop!'))
     print('Started ' + client.user.name + ' on ' + str
           (date.today()))
+=======
+    print('Started ' + client.user.name + ' on ' + str
+          (date.today()))
+
+>>>>>>> d4a26fcb5c962c7ef9c93caccdef4b74d90c5966
 
 '''check if user is in db
     if user exists let them know
@@ -25,7 +34,11 @@ async def on_ready():
 async def on_message(message):
     if message.content.startswith('!build'):
         user_url = message.content[7:]
+<<<<<<< HEAD
         '''req = Request(user_url,
+=======
+        req = Request(user_url,
+>>>>>>> d4a26fcb5c962c7ef9c93caccdef4b74d90c5966
                       headers={'User-Agent': 'Mozilla/5.0'})
         url = urlopen(req)
         content = url.read()
@@ -44,4 +57,10 @@ async def on_message(message):
 with open('token.json', 'r') as t:
     data = json.load(t)
 
+<<<<<<< HEAD
+=======
+with open('token.json', 'r') as t:
+    data = json.load(t)
+
+>>>>>>> d4a26fcb5c962c7ef9c93caccdef4b74d90c5966
 client.run(data["token"])
