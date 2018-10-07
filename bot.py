@@ -34,7 +34,6 @@ async def on_message(message):
            'await client.send_message(message.channel, "You already have a build added.")'
            c.execute("SELECT * FROM builds WHERE name=?", (message.author.id, ))
            r = c.fetchone()
-           print(r[1])
            req = Request(r[1], headers={'User-Agent': 'Mozilla/5.0'})
            url = urlopen(req)
            content = url.read()
@@ -44,18 +43,21 @@ async def on_message(message):
            output = []
            for x in i:
                 output.append(x.get_text().strip("\n"))
-           embed.add_field(name='<@%d>' % r[0], value='\n'.join(output))
+           embed.add_field(name='Your pc build', value='\n'.join(output))
            await client.send_message(message.channel, embed=embed)
         elif not user_build and not user_url:
-            await client.send_message(message.channel, "No build found for user, use this command again and provide a pcpartpicker link")
+            await client.send_message(message.channel, "No build found for user. ```Usage: !build [pcpartpicker link]```")
         elif not user_build and user_url:
             c.execute("INSERT INTO builds (name, buildLink) VALUES (?,?)", (message.author.id, user_url))
             await client.send_message(message.channel, "Build saved.")
-           
-           
-
-
+            conn.commit()
+    elif message.content.startswith('!remove'):
+        #remove their link
+        c.execute('DELETE FROM builds WHERE name =?', (message.author.id, ))
         conn.commit()
+        await client.send_message(message.channel, "Build removed.")
+           
+
 
 with open('token.json', 'r') as t:
     data = json.load(t)
