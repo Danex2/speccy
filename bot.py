@@ -5,6 +5,7 @@ import asyncio
 from datetime import date
 import json
 import sqlite3
+from PCPartPicker_API import pcpartpicker
 
 
 
@@ -20,9 +21,7 @@ async def on_ready():
     print('Started ' + client.user.name + ' on ' + str
           (date.today()))
 
-'''check if user is in db
-    if user exists let them know
-    if not add build to db'''
+
 @client.event
 async def on_message(message):
     user_url = message.content[7:]
@@ -52,10 +51,20 @@ async def on_message(message):
             await client.send_message(message.channel, "Build saved.")
             conn.commit()
     elif message.content.startswith('!remove'):
-        #remove their link
-        c.execute('DELETE FROM builds WHERE name =?', (message.author.id, ))
-        conn.commit()
-        await client.send_message(message.channel, "Build removed.")
+       #remove their link
+        c.execute("SELECT * FROM builds WHERE name=?", (message.author.id, ))
+        user_build = c.fetchall()
+        if not user_build:
+            await client.send_message(message.channel, "No build to remove, please add one first.")
+        else:
+            c.execute('DELETE FROM builds WHERE name =?', (message.author.id, ))
+            conn.commit()
+            await client.send_message(message.channel, "Build removed.")
+    elif message.content.startswith('!part'):
+        args = message.content.split(" ")
+        part = args[1]
+        item = args[2:]
+        await client.send_message(message.channel, part)
            
 
 
