@@ -14,6 +14,10 @@ c = conn.cursor()
 c.execute('''CREATE TABLE IF NOT EXISTS builds (name integer, buildLink text)''')
 client = discord.Client()
 
+parts = {'cpu': 'cpu','cooler': 'cpu-cooler', 'mb': 'motherboard', 'ram': 'memory', 
+'hdd': 'internal-hard-drive', 'gpu': 'video-card', 'psu': 'power-supply', 'case': 'case', 
+'monitor': 'monitor', 'keyboard': 'keyboard', 'mouse': 'mouse'}
+
 
 @client.event
 async def on_ready():
@@ -62,9 +66,17 @@ async def on_message(message):
             await client.send_message(message.channel, "Build removed.")
     elif message.content.startswith('!part'):
         args = message.content.split(" ")
-        part = args[1]
-        item = args[2:]
-        await client.send_message(message.channel, part)
+        region = args[1]
+        item = args[3:]
+        part = args[2]
+        pcpartpicker.set_region(region)
+        component = pcpartpicker.lists.get_list(parts.get(part))
+        for pc_item in component:
+            if "".join(item).lower() in pc_item['name'].lower() and pc_item["price"] != "":
+               return await client.send_message(message.channel, pc_item['name'] + " : " + pc_item["price"])
+
+               
+
            
 
 
