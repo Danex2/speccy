@@ -6,6 +6,8 @@ from datetime import date
 import json
 import sqlite3
 from PCPartPicker_API import pcpartpicker
+import time
+import pprint
 
 
 
@@ -65,16 +67,20 @@ async def on_message(message):
             conn.commit()
             await client.send_message(message.channel, "Build removed.")
     elif message.content.startswith('!part'):
+        embed = discord.Embed(title="", color=0xcc1df1)
         args = message.content.split(" ")
         region = args[1]
         item = args[3:]
         part = args[2]
         pcpartpicker.set_region(region)
         component = pcpartpicker.lists.get_list(parts.get(part))
+        part_dict = {}
         for pc_item in component:
             if "".join(item).lower() in pc_item['name'].lower() and pc_item["price"] != "":
-               return await client.send_message(message.channel, pc_item['name'] + " : " + pc_item["price"])
-
+               part_dict[pc_item['name']] = pc_item["price"]
+               """await client.send_message(message.channel, pc_item['name'] + " : " + pc_item["price"])"""
+        embed.add_field(name='Part List', value=str(part_dict).strip('{}').replace(",","\n").replace("'", ""))
+        await client.send_message(message.channel, embed=embed)
                
 
            
