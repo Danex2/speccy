@@ -7,7 +7,8 @@ import json
 import sqlite3
 from PCPartPicker_API import pcpartpicker
 import time
-import pprint
+import urllib.error
+
 
 
 
@@ -66,22 +67,28 @@ async def on_message(message):
             c.execute('DELETE FROM builds WHERE name =?', (message.author.id, ))
             conn.commit()
             await client.send_message(message.channel, "Build removed.")
-    elif message.content.startswith('!part'):
+    elif message.content.startswith('!price'):
         embed = discord.Embed(title="", color=0xcc1df1)
         args = message.content.split(" ")
-        region = args[1]
-        item = args[3:]
-        part = args[2]
-        pcpartpicker.set_region(region)
-        component = pcpartpicker.lists.get_list(parts.get(part))
-        part_dict = {}
-        for pc_item in component:
-            if "".join(item).lower() in pc_item['name'].lower() and pc_item["price"] != "":
-               part_dict[pc_item['name']] = pc_item["price"]
-               """await client.send_message(message.channel, pc_item['name'] + " : " + pc_item["price"])"""
-        embed.add_field(name='Part List', value=str(part_dict).strip('{}').replace(",","\n").replace("'", ""))
-        await client.send_message(message.channel, embed=embed)
-               
+        if len(args) < 3:
+            await client.send_message(message.channel, "```Usage: !price [region] [component] [search term]```")
+        else:
+            try:
+                region = args[1]
+                item = args[3:]
+                part = args[2]
+                pcpartpicker.set_region(region)
+                component = pcpartpicker.lists.get_list(parts.get(part))
+                part_dict = {}
+                for pc_item in component:
+                    """fix the searching thing"""
+                    if "".join(item).lower() in pc_item['name'].lower() and pc_item["price"] != "":
+                        part_dict[pc_item['name']] = pc_item["price"]
+                embed.add_field(name='Part List', value=str(part_dict).strip('{}').replace(",","\n").replace("'", ""))
+                await client.send_message(message.channel, embed=embed)
+            except urllib.error.HTTPError as e:
+                if e.code == 400:
+                    await client.send_message(message.channel, "Returned too many results, try typing the exact part name or more parts of it.")
 
            
 
